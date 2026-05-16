@@ -13,6 +13,18 @@ from openai import AzureOpenAI
 
 load_dotenv()
 app = Flask(__name__)
+
+from functools import wraps
+
+def require_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        user_name = request.headers.get("X-MS-CLIENT-PRINCIPAL-NAME")
+        if not user_name:
+            return jsonify({"error": "Authentication required"}), 401
+        return f(*args, **kwargs)
+    return decorated
+
 credential = DefaultAzureCredential()
 
 container_client = BlobServiceClient(
@@ -36,6 +48,15 @@ aoai = AzureOpenAI(
 
 @app.route("/")
 def home():
+    # Check if the user is signed in
+    # Easy Auth sets this header for authenticated users
+    user_name = request.headers.get("X-MS-CLIENT-PRINCIPAL-NAME")
+
+    if not user_name:
+        # Not signed in — show the landing page
+        return render_template("login.html")
+
+    # Signed in — show the main app
     try:
         files = [b.name for b in container_client.list_blobs()]
     except Exception as e:
@@ -45,6 +66,7 @@ def home():
 
 
 @app.route("/upload", methods=["POST"])
+@require_auth
 def upload():
     file = request.files.get("file")
     if not file or not file.filename:
@@ -63,6 +85,7 @@ def upload():
 
 
 @app.route("/ask", methods=["POST"])
+@require_auth
 def ask():
     question = (request.get_json() or {}).get("question", "").strip()
     if not question:

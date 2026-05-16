@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+    <title>Document Q&A — Sign in</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+        h1 { color: #333; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 40px; line-height: 1.5; }
+        .signin-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #0078d4;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        .signin-btn:hover { background: #106ebe; }
+        .footer {
+            margin-top: 60px;
+            font-size: 13px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <h1>Document Q&amp;A</h1>
+    <p>Upload your documents and ask questions about them in natural language, powered by Azure AI Search.</p>
+
+    <a href="/.auth/login/aad?post_login_redirect_uri=/" class="signin-btn">
+        Sign in with Microsoft
+    </a>
+
+    <div class="footer">
+        Built with Flask, Azure AI Search, and Azure OpenAI.
+    </div>
+</body>
+</html>
