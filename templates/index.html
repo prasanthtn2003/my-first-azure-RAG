@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+    <title>Document Q&A</title>
+    <style>
+        body { font-family: sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+        section { margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        button { padding: 8px 16px; cursor: pointer; }
+        input[type=text] { width: 100%; padding: 8px; box-sizing: border-box; }
+        #answer { white-space: pre-wrap; margin-top: 12px; padding: 12px; background: #f5f5f5; border-radius: 6px; min-height: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Document Q&amp;A</h1>
+
+    <section>
+        <h2>Upload</h2>
+        <form id="upload-form">
+            <input type="file" name="file" required>
+            <button type="submit">Upload</button>
+        </form>
+        <p id="upload-status"></p>
+        <h3>Files:</h3>
+        <ul>
+            {% for f in files %}<li>{{ f }}</li>{% else %}<li><em>None</em></li>{% endfor %}
+        </ul>
+    </section>
+
+    <section>
+        <h2>Ask</h2>
+        <input type="text" id="question" placeholder="Ask a question...">
+        <button onclick="askQuestion()">Ask</button>
+        <div id="answer"></div>
+    </section>
+
+    <script>
+        document.getElementById("upload-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            document.getElementById("upload-status").textContent = "Uploading...";
+            const res = await fetch("/upload", { method: "POST", body: new FormData(e.target) });
+            const data = await res.json();
+            document.getElementById("upload-status").textContent = data.message || data.error;
+            setTimeout(() => location.reload(), 1500);
+        });
+
+        async function askQuestion() {
+            const q = document.getElementById("question").value;
+            if (!q) return;
+            document.getElementById("answer").textContent = "Thinking...";
+            const res = await fetch("/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: q }),
+            });
+            const data = await res.json();
+            document.getElementById("answer").textContent = data.answer || data.error;
+        }
+    </script>
+</body>
+</html>
