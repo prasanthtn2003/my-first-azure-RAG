@@ -4,3 +4,4 @@ python-dotenv
 flask
 azure.storage.blob
 openai
+gunicorn
